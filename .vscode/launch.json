@@ -12,5 +12,16 @@
             "program": "${file}",
             "console": "integratedTerminal"
         }
+        {
+            "name": "Python: debug assignment",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/week3/assignment.py",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/.env/bin/python"
+            },
+            "stopOnEntry": true
+
+        }
     ]
 }
