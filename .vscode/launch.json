@@ -9,10 +9,13 @@
             "name": "Week9-ssd-experiment",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/week9/single-stage-detector/5-Experiment.py",
+            "program": "${file}",
             "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/.env/bin/python"
+            },
             "stopOnEntry": true
-        },
+        }
         {
             "name": "Python: debug assignment",
             "type": "debugpy",
