@@ -84,7 +84,7 @@ def encode_boxes(boxes, anchors):
 
 def generate_anchor_grid(input_size, fm_size, anchors):
     grid_size = input_size[0] / fm_size
-    x, y = torch.meshgrid(torch.arange(0, fm_size) * grid_size, torch.arange(0, fm_size) * grid_size)
+    x, y = torch.meshgrid(torch.arange(0, fm_size) * grid_size, torch.arange(0, fm_size) * grid_size, indexing='ij')
     anchors = anchors.view(-1, 1, 1, 4)
     xyxy = torch.stack([x, y, x, y], 2).float()
     boxes = (xyxy + anchors).permute(2, 1, 0, 3).contiguous().view(-1, 4)

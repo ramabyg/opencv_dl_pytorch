@@ -31,6 +31,7 @@ import torch
 import torch.optim as optim
 import matplotlib.pyplot as plt
 
+
 from albumentations import (
     CLAHE,
     Blur,
@@ -39,15 +40,14 @@ from albumentations import (
     RGBShift,
     GaussNoise,
     RandomGamma,
-    RandomContrast,
-    RandomBrightness,
+    RandomBrightnessContrast
 )
 
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import MultiStepLR
 from albumentations.pytorch.transforms import ToTensorV2
-from albumentations.augmentations.transforms import HueSaturationValue
-from albumentations.augmentations.transforms import Normalize
+from albumentations.augmentations import HueSaturationValue
+from albumentations.augmentations import Normalize
 
 from trainer import Trainer, hooks, configuration
 from detector import Detector
@@ -83,7 +83,7 @@ class Experiment:
         setup_system(system_config)
         self.dataset_train = ListDataset(
             root_dir=dataset_config.root_dir,
-            list_file='../train_anno.txt',
+            list_file='train_anno.txt',
             classes=["__background__", "person"],
             mode='train',
             transform=Compose(dataset_config.train_transforms),
@@ -101,7 +101,7 @@ class Experiment:
 
         self.dataset_test = ListDataset(
             root_dir=dataset_config.root_dir,
-            list_file='../test_anno.txt',
+            list_file='test_anno.txt',
             classes=["__background__", "person"],
             mode='val',
             transform=Compose([Normalize(), ToTensorV2()]),
@@ -164,10 +164,13 @@ class Experiment:
         # load the best model
         if trainer_config.model_save_best:
             self.model.load_state_dict(
-                torch.
-                load(os.path.join(trainer_config.model_dir, self.model.__class__.__name__) + '_best.pth')
+                torch.load(os.path.join(trainer_config.model_dir, self.model.__class__.__name__) + '_best.pth', 
+                           map_location=trainer_config.device,
+                           weights_only=True)
             )
         # or use the last saved
+        self.model.to(torch.device(trainer_config.device))
+        
         self.model = self.model.eval()
 
         std = (0.229, 0.224, 0.225)
@@ -225,6 +228,8 @@ class Experiment:
                 axi.imshow(merged_img)
                 axi.axis('off')
         fig.show()
+        # save the image with drawn bboxes
+        fig.savefig('detection_results.png')
 
 
 # ## <font style="color:green">5.2. PennFudan Pedestrian Dataset</font>
@@ -250,19 +255,18 @@ class Experiment:
 if __name__ == '__main__':
     dataloader_config, trainer_config = patch_configs(epoch_num_to_set=100, batch_size_to_set=30)
     # Downloading dataset
-    DataSetDownloader(root_dir='data', dataset_title='PennFudanPed', download=True)
+    DataSetDownloader(root_dir='/mnt/rama_ml/data', dataset_title='PennFudanPed', download=True)
     dataset_config = configuration.DatasetConfig(
-        root_dir="data/PennFudanPed/",
+        root_dir="/mnt/rama_ml/data/PennFudanPed/",
         train_transforms=[
-            RandomBrightness(p=0.5),
-            RandomContrast(p=0.5),
+            RandomBrightnessContrast(p=0.5),
             OneOf([
                 RandomGamma(),
                 HueSaturationValue(hue_shift_limit=20, sat_shift_limit=50, val_shift_limit=50),
                 RGBShift()
             ],
                 p=1),
-            OneOf([Blur(always_apply=True), GaussNoise(always_apply=True)], p=1),
+            OneOf([Blur(p=1.0), GaussNoise(p=1.0)], p=1),
             CLAHE(),
             Normalize(),
             ToTensorV2()

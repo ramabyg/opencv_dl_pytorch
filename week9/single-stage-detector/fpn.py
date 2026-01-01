@@ -5,12 +5,20 @@ import sys
 
 
 class FPN(nn.Module):
-    def __init__(self, block_expansion=1, backbone="resnet18"):
+    def __init__(self, block_expansion=1, backbone="ResNet18"):
         super().__init__()
-        assert hasattr(models, backbone), "Undefined encoder type"
+        assert hasattr(models, backbone.lower()), "Undefined encoder type"
         
         # load model 
-        self.feature_extractor = getattr(models, backbone)(pretrained=True)
+        # self.feature_extractor = getattr(models, backbone)(pretrained=True)
+        model_fn = getattr(models, backbone.lower())
+        weights_enum = getattr(models, f"{backbone}_Weights", None)
+        if weights_enum:
+            weights = weights_enum.DEFAULT
+        else:
+            weights = None
+        self.feature_extractor = model_fn(weights=weights)
+
         
         # two more layers conv6 and conv7 on the top of layer4 (if backbone is resnet18)
         
