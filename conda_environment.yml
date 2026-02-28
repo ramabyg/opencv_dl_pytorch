@@ -1,0 +1,38 @@
+name: ml_base
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.10
+  - pip
+  - numpy
+  - scipy
+  - pandas
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - jupyterlab
+  - ipykernel
+  - pillow
+  - tqdm
+  - pyyaml
+  - psutil
+  - scikit-image
+  - pip:
+      # --- PyTorch manual install (CUDA 12.4) ---
+      - torch==2.4.1+cu124
+      - torchvision==0.19.1+cu124
+      - torchaudio==2.4.1+cu124
+      - --extra-index-url https://download.pytorch.org/whl/cu124
+
+      # --- Extra ML packages ---
+      - timm
+      - albumentations
+      - opencv-python
+      - wandb
+      - lightning
+      - rich
+      - einops
+      - tensorboard
+      - torchmetrics

@@ -15,7 +15,7 @@
                 "PYTHONPATH": "${workspaceFolder}/.env/bin/python"
             },
             "stopOnEntry": true
-        }
+        },
         {
             "name": "Python: debug assignment",
             "type": "debugpy",
@@ -26,6 +26,16 @@
             },
             "stopOnEntry": true
 
+        },
+        {
+            "name": "C++ debug sample",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/week15/LibTorch/sample_code/build/Debug/sample.exe",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}/week15/LibTorch/sample_code",
+            "environment": [],
+            "console": "integratedTerminal"
         }
-    ]
 }
